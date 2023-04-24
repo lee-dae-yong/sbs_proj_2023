@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper	namespace="com.khj.exam.demo.repository.ArticleRepository">
+	<insert id="writeArticle">
+		INSERT INTO article
+		SET regDate = NOW(),
+		updateDate = NOW(),
+		boardId = #{boardId},
+		memberId = #{memberId},
+		title = #{title},
+		`body` = #{body}
+	</insert>
+	
+	<select id="getForPrintArticles" resultType="Article">
+		SELECT A.*,
+		M.nickname AS extra__writerName
+		FROM article AS A
+		LEFT JOIN MEMBER AS M
+		ON A.memberId = M.id
+		<if test="boardId != 0">
+		WHERE A.boardId = #{boardId}
+		</if>
+		ORDER BY id DESC
+		LIMIT #{limitStart}, #{limitTake}
+	</select>
+	
+	<select id="getArticlesCount" resultType="int">
+		SELECT COUNT(*) AS cnt
+		FROM article AS A
+		<if test="boardId != 0">
+			 WHERE A.boardId = #{boardId}
+		</if>
+	</select>
+	<select id="getForPrintArticle" resultType="Article">
+		SELECT A.*,
+		M.nickname AS extra__writerName
+		FROM article AS A
+		LEFT JOIN MEMBER AS M
+		ON A.memberId = M.id
+		WHERE A.id = #{id}
+	</select>
+	
+	<select id="getLastInsertId" resultType="int">
+		SELECT LAST_INSERT_ID()
+	</select>
+	
+	<delete id="deleteArticle">
+		DELETE
+		FROM article
+		WHERE id = #{id}
+	</delete>
+	
+	<update id="modifyArticle">
+		UPDATE article
+		<set>
+			<if test="title != null and title != ''">
+				title = #{title},
+			</if>
+			<if test="body != null and body != ''">
+				`body` = #{body},
+			</if>
+			updateDate = NOW()
+		</set>
+		WHERE id = #{id}
+	</update>
+</mapper>
