@@ -58,18 +58,21 @@ public class UsrArticleController {
 	
 	
 	@RequestMapping("/usr/article/list")
-	public String showList(Model model, @RequestParam(defaultValue="1")int boardId, @RequestParam(defaultValue ="1")int page) {
+	public String showList(Model model, @RequestParam(defaultValue="1")int boardId,
+			@RequestParam(defaultValue ="1")int page,
+			@RequestParam(defaultValue = "title, body")String searchKeywordTypeCode,
+			@RequestParam(defaultValue = "")String searchKeyword){
 		
 		Board board = boardService.getBoardById(boardId);
 		if(board == null) {
 			return rq.historyBackJsOnview(Ut.f("%d번 게시판은 존재하지 않습니다.", boardId));
 		}
 		
-		int articlesCount = articleService.getArticleCount(boardId);
+		int articlesCount = articleService.getArticleCount(boardId, searchKeywordTypeCode, searchKeyword);
 		int itemsCountInAPage= 10;
 		int pagesCount = (int)Math.ceil((double)articlesCount) / itemsCountInAPage;
 		
-		List<Article> articles = articleService.getForPrintArticles(rq.getLoginedMemberId(), boardId, itemsCountInAPage, page);
+		List<Article> articles = articleService.getForPrintArticles(rq.getLoginedMemberId(), boardId, searchKeywordTypeCode, searchKeyword ,itemsCountInAPage, page);
 	
 		model.addAttribute("board", board);
 		model.addAttribute("page",page);
@@ -88,6 +91,23 @@ public class UsrArticleController {
 		model.addAttribute("article", article);
 
 		return "usr/article/detail";
+	}
+	
+	@RequestMapping("/usr/article/doIncreaseHitCountRd")
+	@ResponseBody
+	public ResultData<Integer> doIncreaseHitCountRd(int id) {
+		
+		ResultData<Integer> increaseHitCountRd = articleService.increaseHitCount(id);
+		
+		if(increaseHitCountRd.isFail()) {
+			return increaseHitCountRd;
+		}
+		
+		ResultData<Integer> rd = ResultData.newData(increaseHitCountRd, "hitCount", articleService.getArticleHitCount(id));
+		
+		 rd.setData2("id",id);
+		 
+		 return rd;
 	}
 	
 	@RequestMapping("/usr/article/getArticle")

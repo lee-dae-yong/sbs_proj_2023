@@ -20,8 +20,27 @@
 		<if test="boardId != 0">
 		WHERE A.boardId = #{boardId}
 		</if>
+		<if test="searchKeyword !=''">
+			<choose>
+		    	<when test="searchKeywordTypeCode == 'title'">
+		      		AND A.title LIKE CONCAT('%',#{searchKeyword},'%')
+		    	</when>
+		    	<when test="searchKeywordTypeCode == 'body'">
+		      		AND A.body LIKE CONCAT('%',#{searchKeyword},'%')
+		    	</when>
+		    	<otherwise>
+		    		AND(
+		    			A.title LIKE CONCAT('%',#{searchKeyword},'%')
+		    			OR
+		    			A.body LIKE CONCAT('%',#{searchKeyword},'%')
+		    		)
+		    	</otherwise>
+			</choose>
+		</if>
 		ORDER BY id DESC
-		LIMIT #{limitStart}, #{limitTake}
+		<if test="limitTake != -1">
+			LIMIT #{limitStart}, #{limitTake}
+		</if>
 	</select>
 	
 	<select id="getArticlesCount" resultType="int">
@@ -29,6 +48,23 @@
 		FROM article AS A
 		<if test="boardId != 0">
 			 WHERE A.boardId = #{boardId}
+		</if>
+		<if test="searchKeyword !=''">
+			<choose>
+		    	<when test="searchKeywordTypeCode == 'title'">
+		      		AND A.title LIKE CONCAT('%',#{searchKeyword},'%')
+		    	</when>
+		    	<when test="searchKeywordTypeCode == 'body'">
+		      		AND A.body LIKE CONCAT('%',#{searchKeyword},'%')
+		    	</when>
+		    	<otherwise>
+		    		AND(
+		    			A.title LIKE CONCAT('%',#{searchKeyword},'%')
+		    			OR
+		    			A.body LIKE CONCAT('%',#{searchKeyword},'%')
+		    		)
+		    	</otherwise>
+			</choose>
 		</if>
 	</select>
 	<select id="getForPrintArticle" resultType="Article">
@@ -63,4 +99,16 @@
 		</set>
 		WHERE id = #{id}
 	</update>
+	
+	<update id="increseHitCount">
+		UPDATE article
+		SET hitCount = hitCount + 1
+		WHERE id = #{id}
+	</update>
+	
+	<select id="getArticleHitCount" resultType="int">
+		SELECT hitCount
+		FROM article
+		WHERE id = #{id}
+	</select>
 </mapper>

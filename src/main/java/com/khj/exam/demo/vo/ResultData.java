@@ -1,7 +1,9 @@
 package com.khj.exam.demo.vo;
 
 import lombok.Getter;
+import lombok.ToString;
 
+@ToString
 public class ResultData<DT> {
 	@Getter
 	private String resultCode;
@@ -10,11 +12,11 @@ public class ResultData<DT> {
 	@Getter
 	private String data1Name;
 	@Getter
+	private String data2Name;
+	@Getter
 	private DT data1;
-	
-	private ResultData() {
-		
-	}
+	@Getter
+	private DT data2;
 	
 	public static ResultData from(String resultCode, String msg) {
 		return from(resultCode, msg, null, null);
@@ -42,8 +44,9 @@ public class ResultData<DT> {
 		return isSuccess() == false;
 	}
 
-	
-
-	
+	public void setData2(String dataName, DT data) {
+		this.data2Name = dataName;
+		this.data2 = data;
+	}
 
 }

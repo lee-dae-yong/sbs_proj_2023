@@ -3,6 +3,43 @@
 <c:set var="pageTitle" value="게시물 내용"/>
 <%@include file="../common/head.jspf" %>
 
+<script>
+	const params = {}
+	params.id = parseInt("${param.id}");
+</script>
+
+<script>
+	function ArticleDetail_increaseHitCount() {
+	
+	const localStorageKey = 'article__' + params.id + '__viewDone';
+	
+	if (localStorage.getItem(localStorageKey)) {
+		return;
+	}
+	
+	localStorage.setItem(localStorageKey, true);
+	
+		
+		$.get(
+			'../article/doIncreaseHitCountRd',
+			{
+				id : params.id,
+				ajaxMode : 'Y'
+			}, function(data){
+				$('.article-detail_hit-count').empty().html(data.data1);
+			},'json');
+	}
+	
+	$(function(){
+		
+		ArticleDetail_increaseHitCount();
+		
+		//임시 코드
+		//setTimeout(ArticleDetail_increaseHitCount, 3000);
+		
+	})
+</script>
+
 <section class="mt-5">
 	<div class="container mx-auto px-3">
     <div class="table-box-type-1">
@@ -28,6 +65,12 @@
             <td>${article.extra__writerName}</td>
           </tr>
           <tr>
+            <th>조회수</th>
+            <td>
+              <span class="badge badge-primary article-detail_hit-count">${article.hitCount}</span>
+            </td>
+          </tr>
+          <tr>
             <th>제목</th>
             <td>
               ${article.title}
@@ -42,7 +85,6 @@
         </tbody>
       </table>
     </div>
-	
 	<div class="btns">
 		<button class="btn btn-link" type="button" onclick="history.back();">뒤로가기</button>
 		<c:if test="${article.extra__actorCanModify}">
@@ -54,5 +96,9 @@
 		</c:if>
 		
 	</div>
+	</div>
 </section>
+
+
+
 <%@include file="../common/foot.jspf" %>
