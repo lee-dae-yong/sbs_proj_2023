@@ -23,7 +23,12 @@ public interface ArticleRepository {
 
 	int getArticlesCount(@Param("boardId")int boardId, String searchKeywordTypeCode, String searchKeyword);
 
-	int increseHitCount(int id);
+	int increaseHitCount(int id);
 
 	int getArticleHitCount(int id);
+
+	int increaseGoodReactionPoint(int relId);
+
+	int increaseBadReactionPoint(int relId);
+
 }

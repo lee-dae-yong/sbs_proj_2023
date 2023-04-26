@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.khj.exam.demo.service.ArticleService;
 import com.khj.exam.demo.service.BoardService;
+import com.khj.exam.demo.service.ReactionPointService;
 import com.khj.exam.demo.utill.Ut;
 import com.khj.exam.demo.vo.Article;
 import com.khj.exam.demo.vo.Board;
@@ -27,6 +28,8 @@ public class UsrArticleController {
 	private ArticleService articleService;
 	@Autowired
 	private BoardService boardService;
+	@Autowired
+	private ReactionPointService reactionPointService;
 	@Autowired
 	private Rq rq;
 	// 액션 메서드 시작
@@ -88,8 +91,11 @@ public class UsrArticleController {
 		
 		Article article = articleService.getForPrintArticle(rq.getLoginedMemberId(), id);
 		
+		boolean actorCanMakeReactionPoint = reactionPointService.actorCanMakeReactionPoint(rq.getLoginedMemberId(),"article",id);
+		
+		model.addAttribute("actorCanMakeReactionPoint", actorCanMakeReactionPoint);
 		model.addAttribute("article", article);
-
+		
 		return "usr/article/detail";
 	}
 	

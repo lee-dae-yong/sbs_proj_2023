@@ -15,8 +15,9 @@ public class Article {
 	private String title;
 	private String body;
 	private int hitCount;
-	private String forPrintintTypeRegDate;
-	
+	private int goodReactionPoint;
+	private int badReactionPoint;
+
 	private String extra__writerName;
 	private boolean extra__actorCanDelete;
 	private boolean extra__actorCanModify;
@@ -28,14 +29,11 @@ public class Article {
 	public String getUpdateDateForPrint() {
 		return regDate.substring(2, 16);
 	}
-	public String setForPrintintTypeRegDate() {
-		return regDate.substring(2, 16).replace(" ","<br>");
-	}
-	public String getForPrintintTypeRegDate() {
+	public String forPrintintTypeRegDate() {
 		return regDate.substring(2, 16).replace(" ","<br>");
 	}
 	
 	public String forPrintintTypeUpdateDate() {
-		return updateDate.substring(2, 16).replace("","<br>");
+		return updateDate.substring(2, 16).replace(" ","<br>");
 	}
 }

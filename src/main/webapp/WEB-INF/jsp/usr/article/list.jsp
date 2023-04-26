@@ -25,8 +25,10 @@
       <table class="table table-fixed w-full">
         <colgroup>	
           <col width="50"/>
-          <col width="200"/>
-          <col width="200"/>
+          <col width="100"/>
+          <col width="100"/>
+          <col width="100"/>
+          <col width="50"/>
           <col width="150"/>
           <col />
         </colgroup>
@@ -35,6 +37,8 @@
             <th>번호</th>
             <th>작성날짜</th>
             <th>수정날짜</th>
+            <th>조회</th>
+            <th>추천</th>
             <th>작성자</th>
             <th>제목</th>
           </tr>
@@ -43,8 +47,10 @@
           <c:forEach var="article" items="${articles}">
             <tr class="hover">
               <th>${article.id}</th>
-              <td>${article.forPrintintTypeRegDate}</td>
-              <td>${article.updateDate.substring(2, 16)}</td>
+              <td>${article.forPrintintTypeRegDate()}</td>
+              <td>${article.forPrintintTypeUpdateDate()}</td>
+              <td>${article.hitCount}</td>
+              <td>${article.goodReactionPoint}</td>
               <td>${article.extra__writerName}</td>
               <td>
                 <a class="btn-text-link block w-full truncate" href="../article/detail?id=${article.id}">${article.title}</a>
