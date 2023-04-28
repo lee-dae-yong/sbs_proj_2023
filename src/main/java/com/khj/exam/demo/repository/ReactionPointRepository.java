@@ -1,5 +1,6 @@
 package com.khj.exam.demo.repository;
 
+import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
@@ -14,8 +15,8 @@ public interface ReactionPointRepository {
 			AND RP.relId = #{relId}
 			AND RP.memberID = #{loginedMemberId}
 			""")
-	int actorCanMakeReactionPoint(int loginedMemberId, String relTypeCode, int relId);
-
+	int getSumReactionPointByMemberId(int relId, String relTypeCode, int loginedMemberId);
+	
 	@Insert("""
 			INSERT INTO reactionPoint
 			SET regDate = NOW(),
@@ -37,5 +38,21 @@ public interface ReactionPointRepository {
 			`point` = -1
 			""")
 	void addBadReactionPoint(int memberId, String relTypeCode, int relId);
+
+	@Delete("""
+			DELETE FROM reactionPoint
+			WHERE relTypeCode = #{relTypeCode}
+			AND relId = #{relId}
+			AND memberId = #{memberId}
+			""")
+	void deleteGoodReactionPoint(int memberId, String relTypeCode, int relId);
+
+	@Delete("""
+			DELETE FROM reactionPoint
+			WHERE relTypeCode = #{relTypeCode}
+			AND relId = #{relId}
+			AND memberId = #{memberId}
+			""")
+	void deleteBadReactionPoint(int memberId, String relTypeCode, int relId);
 
 }

@@ -26,11 +26,10 @@ public class ArticleService {
 	}
 	
 	public List<Article> getForPrintArticles(int actorId, int boardId, String searchKeywordTypeCode, String searchKeyword, int itemsCountInAPage, int page) {
-		
-		int limitStart = (page-1)*itemsCountInAPage;
+		int limitStart = (page - 1) * itemsCountInAPage;
 		int limitTake = itemsCountInAPage;
 		
-		List<Article> articles = articleRepository.getForPrintArticles(boardId, searchKeywordTypeCode, searchKeyword,limitStart, limitTake);
+		List<Article> articles = articleRepository.getForPrintArticles(boardId, limitStart, limitTake, searchKeywordTypeCode, searchKeyword);
 		
 		for ( Article article : articles ) {
 			updateForPrintData(actorId, article);
@@ -49,6 +48,18 @@ public class ArticleService {
 		
 		ResultData actorCanMoidyRd = actorCanModify(actorId, article);
 		article.setExtra__actorCanModify(actorCanMoidyRd.isSuccess());
+	}
+	
+	public ResultData actorCanModify(int actorId, Article article) {
+		if ( article == null ) {
+			return ResultData.from("F-1", "게시물이 존재하지 않습니다.");
+		}
+		
+		if ( article.getMemberId() != actorId ) {
+			return ResultData.from("F-2", "권한이 없습니다.");
+		}
+		
+		return ResultData.from("S-1", "게시물 수정이 가능합니다.");
 	}
 	
 	public ResultData actorCanDelete(int actorId, Article article) {
@@ -82,27 +93,14 @@ public class ArticleService {
 		return ResultData.from("S-1", Ut.f("%d번 게시물이 수정되었습니다.", id), "article", article);
 	}
 
-	public ResultData actorCanModify(int actorId, Article article) {
-		if ( article == null ) {
-			return ResultData.from("F-1", "권한이 없습니다.");
-		}
-		
-		if ( article.getMemberId() != actorId ) {
-			return ResultData.from("F-2", "권한이 없습니다.");
-		}
-		
-		return ResultData.from("S-1", "수정가능합니다.");
-	}
-
-	public int getArticleCount(int boardId, String searchKeywordTypeCode, String searchKeyword) {
-		return articleRepository.getArticlesCount(boardId,searchKeywordTypeCode,searchKeyword);
+	public int getArticlesCount(int boardId, String searchKeywordTypeCode, String searchKeyword) {
+		return articleRepository.getArticlesCount(boardId, searchKeywordTypeCode, searchKeyword);
 	}
 
 	public ResultData<Integer> increaseHitCount(int id) {
-		System.out.println("들어옴 : id + " + id);
 		int affectedRowsCount = articleRepository.increaseHitCount(id);
 		
-		if(affectedRowsCount == 0) {
+		if ( affectedRowsCount == 0 ) {
 			return ResultData.from("F-1", "해당 게시물이 존재하지 않습니다.","affectedRowsCount", affectedRowsCount);
 		}
 		
@@ -116,21 +114,40 @@ public class ArticleService {
 	public ResultData increaseGoodReactionPoint(int relId) {
 		int affectedRowsCount = articleRepository.increaseGoodReactionPoint(relId);
 		
-		if(affectedRowsCount == 0) {
-			return ResultData.from("F-1", "해당 게시물이 존재하지 않습니다.","affectedRowsCount", affectedRowsCount);
+		if ( affectedRowsCount == 0 ) {
+			return ResultData.from("F-1", "해당 게시물이 존재하지 않습니다.", "affectedRowsCount", affectedRowsCount);
 		}
 		
 		return ResultData.from("S-1", "좋아요 수가 증가되었습니다.", "affectedRowsCount", affectedRowsCount);
 	}
-
+	
 	public ResultData increaseBadReactionPoint(int relId) {
 		int affectedRowsCount = articleRepository.increaseBadReactionPoint(relId);
 		
-		if(affectedRowsCount == 0) {
-			return ResultData.from("F-1", "해당 게시물이 존재하지 않습니다.","affectedRowsCount", affectedRowsCount);
+		if ( affectedRowsCount == 0 ) {
+			return ResultData.from("F-1", "해당 게시물이 존재하지 않습니다.", "affectedRowsCount", affectedRowsCount);
 		}
 		
 		return ResultData.from("S-1", "싫어요 수가 증가되었습니다.", "affectedRowsCount", affectedRowsCount);
 	}
 
+	public ResultData decreaseGoodReactionPoint(int relId) {
+		int affectedRowsCount = articleRepository.decreaseGoodReactionPoint(relId);
+		
+		if ( affectedRowsCount == 0 ) {
+			return ResultData.from("F-1", "해당 게시물이 존재하지 않습니다.", "affectedRowsCount", affectedRowsCount);
+		}
+		
+		return ResultData.from("S-1", "좋아요 수가 감소되었습니다.", "affectedRowsCount", affectedRowsCount);
+	}
+	
+	public ResultData decreaseBadReactionPoint(int relId) {
+		int affectedRowsCount = articleRepository.decreaseBadReactionPoint(relId);
+		
+		if ( affectedRowsCount == 0 ) {
+			return ResultData.from("F-1", "해당 게시물이 존재하지 않습니다.", "affectedRowsCount", affectedRowsCount);
+		}
+		
+		return ResultData.from("S-1", "싫어요 수가 감소되었습니다.", "affectedRowsCount", affectedRowsCount);
+	}
 }

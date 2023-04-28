@@ -10,18 +10,20 @@ import com.khj.exam.demo.vo.Article;
 @Mapper
 public interface ArticleRepository {
 	Article getForPrintArticle(@Param("id") int id);
-	
-	List<Article> getForPrintArticles(@Param("boardId")int boardId, String searchKeywordTypeCode, String searchKeyword, int limitStart, int limitTake);
-	
-	void writeArticle(@Param("memberId") int memberId, @Param("boardId")int boardId, @Param("title") String title, @Param("body") String body);
-	
+
+	List<Article> getForPrintArticles(int boardId, int limitStart, int limitTake, String searchKeywordTypeCode,
+			String searchKeyword);
+
+	void writeArticle(@Param("memberId") int memberId, @Param("boardId") int boardId,
+			@Param("title") String title, @Param("body") String body);
+
 	void deleteArticle(@Param("id") int id);
 
 	void modifyArticle(@Param("id") int id, @Param("title") String title, @Param("body") String body);
 
 	int getLastInsertId();
 
-	int getArticlesCount(@Param("boardId")int boardId, String searchKeywordTypeCode, String searchKeyword);
+	int getArticlesCount(int boardId, String searchKeywordTypeCode, String searchKeyword);
 
 	int increaseHitCount(int id);
 
@@ -30,5 +32,9 @@ public interface ArticleRepository {
 	int increaseGoodReactionPoint(int relId);
 
 	int increaseBadReactionPoint(int relId);
+
+	int decreaseGoodReactionPoint(int relId);
+
+	int decreaseBadReactionPoint(int relId);
 
 }

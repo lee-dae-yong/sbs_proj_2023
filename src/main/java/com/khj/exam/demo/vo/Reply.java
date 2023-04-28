@@ -1,20 +1,18 @@
 package com.khj.exam.demo.vo;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-public class Article {
+@Getter
+@Setter
+public class Reply {
 	private int id;
 	private String regDate;
 	private String updateDate;
 	private int memberId;
-	private String title;
+	private String relTypeCode;
+	private int relId;
 	private String body;
-	private int hitCount;
 	private int goodReactionPoint;
 	private int badReactionPoint;
 

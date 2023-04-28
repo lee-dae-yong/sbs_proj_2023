@@ -2,6 +2,7 @@ package com.khj.exam.demo.service;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.khj.exam.demo.repository.MemberRepository;
@@ -11,6 +12,9 @@ import com.khj.exam.demo.vo.ResultData;
 
 @Service
 public class MemberService {
+	@Autowired
+	private AttrService attrService;
+	
 	private MemberRepository memberRepository;
 
 	public MemberService(MemberRepository memberRepository) {
@@ -52,5 +56,20 @@ public class MemberService {
 
 	public List<Member> getMembers() {
 		return memberRepository.getMembers();
+	}
+
+	public ResultData modify(int id, String loginPw, String name, String nickname, String email,
+			String cellphoneNo) {
+		memberRepository.modify(id,loginPw, name, nickname, email, cellphoneNo);
+		
+		return ResultData.from("S-1", "회원정보가 수정되었습니다.");
+	}
+
+	public String getMemberModifyAuthKey(int id) {
+		String memberModifyAuthKey = Ut.getTempPassword(10);
+		
+		attrService.setValue("member", id, "extra", "memberModifyAuthKey", memberModifyAuthKey, Ut.getDateStrLater(60*5));
+		
+		return memberModifyAuthKey;
 	}
 }

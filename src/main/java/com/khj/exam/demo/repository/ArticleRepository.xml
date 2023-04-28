@@ -12,31 +12,31 @@
 	</insert>
 	
 	<select id="getForPrintArticles" resultType="Article">
-		 SELECT A.*,
-		    M.nickname AS extra__writerName
-		    FROM article AS A
-		    LEFT JOIN MEMBER AS M
-		    ON A.memberId = M.id
-		    <if test="boardId != 0">
-				WHERE A.boardId = #{boardId}
-			</if>
-			<if test="searchKeyword != ''">
-			  <choose>
-			    <when test="searchKeywordTypeCode == 'title'">
-			      AND A.title LIKE CONCAT('%', #{searchKeyword}, '%')
-			    </when>
-			    <when test="searchKeywordTypeCode == 'body'">
-			      AND A.body LIKE CONCAT('%', #{searchKeyword}, '%')
-			    </when>
-			    <otherwise>
-			    	AND (
-			    		A.title LIKE CONCAT('%', #{searchKeyword}, '%')
-			    		OR
-			    		A.body LIKE CONCAT('%', #{searchKeyword}, '%')
-			    	)
-			    </otherwise>
-			  </choose>
-			</if>
+		SELECT A.*,
+	    M.nickname AS extra__writerName
+	    FROM article AS A
+	    LEFT JOIN MEMBER AS M
+	    ON A.memberId = M.id
+	    <if test="boardId != 0">
+			WHERE A.boardId = #{boardId}
+		</if>
+		<if test="searchKeyword != ''">
+		  <choose>
+		    <when test="searchKeywordTypeCode == 'title'">
+		      AND A.title LIKE CONCAT('%', #{searchKeyword}, '%')
+		    </when>
+		    <when test="searchKeywordTypeCode == 'body'">
+		      AND A.body LIKE CONCAT('%', #{searchKeyword}, '%')
+		    </when>
+		    <otherwise>
+		    	AND (
+		    		A.title LIKE CONCAT('%', #{searchKeyword}, '%')
+		    		OR
+		    		A.body LIKE CONCAT('%', #{searchKeyword}, '%')
+		    	)
+		    </otherwise>
+		  </choose>
+		</if>
 		ORDER BY A.id DESC
 		<if test="limitTake != -1">
 			LIMIT #{limitStart}, #{limitTake}
@@ -125,4 +125,15 @@
 		WHERE id = #{id}
 	</update>
 	
+	<update id="decreaseGoodReactionPoint">
+		UPDATE article
+		SET goodReactionPoint = goodReactionPoint - 1
+		WHERE id = #{id}
+	</update>
+	
+	<update id="decreaseBadReactionPoint">
+		UPDATE article
+		SET badReactionPoint = badReactionPoint - 1
+		WHERE id = #{id}
+	</update>
 </mapper>

@@ -21,7 +21,7 @@
 			  	<tr>
 			  		<th>로그인비밀번호</th>
 			  		<td>
-			  			<input type="password" class="w-96 input input-bordered w-full max-w-xs" name="loginPw" placeholder="로그인비밀번호"/>
+			  			<input required="required" type="password" class="w-96 input input-bordered w-full max-w-xs" name="loginPw" placeholder="로그인비밀번호"/>
 			  		</td>
 			  	</tr>
 			  	<tr>
