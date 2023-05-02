@@ -5,24 +5,23 @@
 <%@include file="../common/head.jspf" %>
 
 <script>
-	let MemberCheckPassword__submitDone = false;
 	function MemberCheckPassword__submit(form) {
+	let MemberCheckPassword__submitDone = false;
 		if ( MemberCheckPassword__submitDone ) {
 			return;
 		}    
 		
 		// 좌우공백 제거
 		form.loginPw.value = form.loginPw.value.trim();
-		if ( form.loginPw.value.length > 0 ) {
 			
 			if(form.loginPw.value.length == 0){
 				alert("비밀번호 확인을 입력해주세요.");
-				form.loginPwConfirm.focus();
+				form.loginPw.focus();
 				return;
-			}
 		}
-		
+			
 		MemberCheckPassword__submitDone = true;
+	
 		form.submit();		
 	}
 </script>

@@ -1,6 +1,7 @@
 package com.khj.exam.demo.vo;
 
 import java.io.IOException;
+import java.util.Map;
 
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
@@ -27,10 +28,13 @@ public class Rq {
 	private HttpServletRequest req;
 	private HttpServletResponse resp;
 	private HttpSession session;
+	private Map<String, String> paramMap;
 	
 	public Rq(HttpServletRequest req, HttpServletResponse resp, MemberService memberService) {
 		this.req = req;
 		this.resp = resp;
+		
+		paramMap = Ut.getParamMap(req);
 		
 		this.session = req.getSession();
 		
@@ -58,7 +62,7 @@ public class Rq {
 		resp.setContentType("text/html;charset=UTF-8");
 		print(Ut.jsHistoryBack(msg));
 	}
-	public void printJsReplace(String msg, String uri) {
+	public void printReplaceJs(String msg, String uri) {
 		resp.setContentType("text/html;charset=UTF-8");
 		print(Ut.jsReplace(msg, uri));
 	}
@@ -88,10 +92,22 @@ public class Rq {
 		req.setAttribute("historyBack", true);
 		return "common/js";
 	}
+	
+	public String historyBackJsOnview(String resultCode, String msg) {
+		req.setAttribute("msg", String.format("[%s] %s", resultCode,msg));
+		req.setAttribute("historyBack", true);
+		return "common/js";
+	}
 
 	public String jsHistoryBack(String msg) {
 		return Ut.jsHistoryBack(msg);
 	}
+	
+	public String jsHistoryBack(String resultCode, String msg) {
+		msg = String.format("[%s] %s", resultCode, msg);
+		return Ut.jsHistoryBack(msg);
+	}
+	
 	public String jsReplace(String msg,String uri) {
 		return Ut.jsReplace(msg,uri);
 	}
@@ -112,5 +128,37 @@ public class Rq {
 	
 	public void initBeforeActionInterceptor() {}
 
+	public String getLoginUri() {
+		return "../member/login?afterLoginUri="+getAfterLoginUri();
+	}
+
+	private String getAfterLoginUri() {
+		String requestUri = req.getRequestURI();
+		
+		switch (requestUri) {
+		case "/usr/member/login":
+		case "/usr/member/join":
+		case "/usr/member/findLoginId":
+		case "/usr/member/findLoginPw":
+			return Ut.getUriEncode(Ut.getStrAttr(paramMap, "afterLoginUri",""));
+		}
+		
+		return getEncodedCurrentUri();
+	}
+
+	public String getLogoutUri() {
+		return "../member/doLogout?afterLogoutUri="+getAfterLogoutUri();
+	}
+
+	private String getAfterLogoutUri() {
+		return getEncodedCurrentUri();
+	}
 	
+	public String getArticleDetailUriFromArticleList(Article article) {
+		return "../article/detail?id="+article.getId()+"&listUri="+getEncodedCurrentUri();
+	}
+	
+	public String getJoinUri() {
+		return "../member/join?afterLogoutUri="+getAfterLogoutUri();
+	}
 }

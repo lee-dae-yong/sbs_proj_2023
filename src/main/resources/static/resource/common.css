@@ -5,8 +5,10 @@
     font-style: normal;
 }
 
-html > body {
-	font-family: 'GmarketSansMedium';
+html>body, html>body .toastui-editor-contents, html>body .ProseMirror,
+html>body .toastui-editor-md-code, html>body .toastui-editor-md-code-block {
+font-family: 'GmarketSansMedium';
+text-underline-position: under;
 }
 
 /* 라이브러리 */

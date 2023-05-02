@@ -41,13 +41,16 @@ public class UsrArticleController {
 	// 액션 메서드 시작
 	@RequestMapping("/usr/article/doWrite")
 	@ResponseBody
-	public String doWrite(int boardId, String title, String body, String replaceUri) {
+	public String doWrite(@RequestParam(defaultValue="1")Integer boardId, String title, String body, String replaceUri) {
 		if (Ut.empty(title)) {
 			return rq.jsHistoryBack("title(을)를 입력해주세요.");
 		}
 
 		if (Ut.empty(body)) {
 			return rq.jsHistoryBack("body(을)를 입력해주세요.");
+		}
+		if (Ut.empty(boardId)) {
+			return rq.jsHistoryBack("게시판 종류를 입력해주세요.");
 		}
 
 		ResultData<Integer> writeArticleRd = articleService.writeArticle(rq.getLoginedMemberId(), boardId, title, body);
