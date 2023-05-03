@@ -2,8 +2,11 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <c:set var="pageTitle" value="회원가입"/>
 <%@include file="../common/head.jspf" %>
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.21/lodash.min.js"></script>
 <script>
+	
+	let validLoginId = "";
+
 	let MemberJoin__submitDone = false;
 	function MemberJoin__submit(form) {
 		if ( MemberJoin__submitDone ) {
@@ -18,7 +21,11 @@
 				form.loginId.focus();
 				return;
 		}
-		
+		if ( form.loginId.value != validLoginId ) {
+			alert("해당 로그인 아이디는 올바르지 않습니다. 다른 로그인 아이디를 입력해주세요.");
+			form.loginId.focus();
+			return;
+		}
 		form.loginPw.value = form.loginPw.value.trim();
 		if ( form.loginPw.value.length == 0 ) {
 				alert("비밀번호를 입력해주세요.");
@@ -64,17 +71,58 @@
 				return;
 		}
 		
-		form.cellPhoneNo.value = form.cellPhoneNo.value.trim();
+		form.cellphoneNo.value = form.cellphoneNo.value.trim();
 		
-		if ( form.cellPhoneNo.value.length == 0 ) {
+		if ( form.cellphoneNo.value.length == 0 ) {
 				alert("휴대전화번호를 입력해주세요.");
-				form.cellPhoneNo.focus();
+				form.cellphoneNo.focus();
 				return;
 		}
+		
+		form.loginPw.value = sha256(form.loginPw.value);
 		
 		MemberJoin__submitDone = true;
 		form.submit();		
 	}
+
+	function checkLoginIdDup(el){
+		const form = $(el).closest('form').get(0);
+		
+		if(form.loginId.value.length == 0){
+			validLoginId = '';
+			$(form.loginId).next().empty();
+			return;
+		}
+		
+		if(validLoginId == form.loginId.value){
+			return;
+		}
+		
+		$('.loginId-msg').html('<div class="mt-2">체크중</div>');
+		
+		$.get("../member/getLoginIdDup",{
+			isAjax : 'Y',
+			loginId : form.loginId.value
+		}, function(data){
+			var $message = $(form.loginId).next();
+			
+			if(data.resultCode.substr(0,2) == "S-"){
+				$message.empty().append('<div class="mt-2 text-green-500">'+data.msg+'</div>');
+				validLoginId = data.data1;
+			}else{
+				$message.empty().append('<div class="mt-2 text-red-500">'+data.msg+'</div>');
+				validLoginId = '';
+			}
+			
+			if(data.success){
+				validLoginId = data.data1;
+			}else{
+				validLoginId = '';
+			}
+		}, 'json');
+	}
+	
+	const checkLoginIdDupDebounced = _.debounce(checkLoginIdDup,1000);
 </script>
 
 <section class="mt-5">
@@ -89,7 +137,10 @@
         <tbody>
           <tr>
             <th>로그인아이디</th>
-            <td><input type="text" class="input input-bordered" name="loginId" placeholder="아이디를 입력해주세요."/></td>
+            <td>
+            	<input type="text" class="input input-bordered" name="loginId" placeholder="아이디를 입력해주세요." onkeyup="checkLoginIdDupDebounced(this);" autocomplete="off"/>
+            	<div class="loginId-msg"></div>
+        	</td>
           </tr>
           <tr>
             <th>새 비밀번호</th>
@@ -106,25 +157,25 @@
           <tr>
             <th>이름</th>
             <td>
-            	<input type="text" class="input input-bordered" name="name" placeholder="이름을 입력해주세요."/>
+            	<input type="text" class="input input-bordered" name="name" placeholder="이름을 입력해주세요." autocomplete="off"/>
             </td>
           </tr>
           <tr>
             <th>닉네임</th>
             <td>
-            	<input type="text" class="input input-bordered" name="nickname" placeholder="닉네임 입력해주세요."/>
+            	<input type="text" class="input input-bordered" name="nickname" placeholder="닉네임 입력해주세요." autocomplete="off"/>
             </td>
           </tr>
           <tr>
             <th>이메일</th>
             <td>
-            	<input type="text" class="input input-bordered" name="email" placeholder="이메일을 입력해주세요."/>
+            	<input type="email" class="input input-bordered" name="email" placeholder="이메일을 입력해주세요." autocomplete="off"/>
             </td>
           </tr>
           <tr>
             <th>휴대전화번호</th>
             <td>
-            	<input type="text" class="input input-bordered" name="cellphoneNo" placeholder="휴대전화번호를 입력해주세요."/>
+            	<input type="text" class="input input-bordered" name="cellphoneNo" placeholder="휴대전화번호를 입력해주세요." autocomplete="off"/>
             </td>
           </tr>
           <tr>

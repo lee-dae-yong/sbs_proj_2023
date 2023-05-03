@@ -20,6 +20,9 @@
 				return;
 		}
 			
+		form.loginPw.value = sha256(form.loginPwInput.value);
+		form.loginPwInput.value = '';
+			
 		MemberCheckPassword__submitDone = true;
 	
 		form.submit();		

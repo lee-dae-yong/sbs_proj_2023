@@ -27,6 +27,23 @@ public class UsrMemberController {
 	@GetMapping("usr/member/join")
 	public void showJoin() {}
 	
+	
+	@RequestMapping("/usr/member/getLoginIdDup")
+	@ResponseBody
+	public ResultData getLoginIdDup(String loginId) {
+		if(Ut.empty(loginId)) {
+			return ResultData.from("F-A1", "loginId를 입력해주세요.");
+		}
+		
+		Member oldMember = memberService.getMemberByLoginId(loginId);
+		
+		if(oldMember != null) {
+			return ResultData.from("F-A2", "해당 로그인 아이디는 이미 사용중입니다.","loginId",loginId);
+		}
+		
+		return ResultData.from("S-1", "사용 가능한 로그인 아이디입니다.","loginId",loginId);
+	}
+	
 	@RequestMapping("/usr/member/doJoin")
 	@ResponseBody
 	public String doJoin(String loginId, String loginPw, String name, String nickname, String cellphoneNo, String email, @RequestParam(defaultValue = "/")String afterLoginUri) {
@@ -97,17 +114,13 @@ public class UsrMemberController {
 			return rq.jsHistoryBack("loginId(을)를 입력해주세요.");
 		}
 		
-		if ( Ut.empty(loginPw) ) {
-			return rq.jsHistoryBack("loginPw(을)를 입력해주세요.");
-		}
-		
 		Member member = memberService.getMemberByLoginId(loginId);
 		
 		if ( member == null ) {
 			return rq.jsHistoryBack("존재하지 않은 로그인아이디 입니다.");
 		}
 		
-		if ( member.getLoginPw().equals(loginPw) == false ) {
+		if ( member.getLoginPw().equals(Ut.sha256(loginPw)) == false ) {
 			return rq.jsHistoryBack("비밀번호가 일치하지 않습니다.");
 		}
 		
@@ -135,6 +148,7 @@ public class UsrMemberController {
 	@RequestMapping("/usr/member/doCheckPassword")
 	@ResponseBody
 	public String doCheckPassword(String loginPw, String replaceUri) {
+		loginPw = Ut.sha256(loginPw);
 		if ( rq.getLoginedMember().getLoginPw().equals(loginPw) == false ) {
 			return rq.jsHistoryBack("비밀번호가 일치하지 않습니다.");
 		}
